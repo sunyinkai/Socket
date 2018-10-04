@@ -1,5 +1,5 @@
 import sqlite3
-conn =sqlite3.connect('test.db')
-cursor = conn.cursor()
-cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
-cursor.execute('insert into user (id, name) values (\'1\', \'Michael\')')
+msg="userName:YinkaiSun\nPasswd:123456\n"
+name=(((msg.split(':'))[1]).split('\n'))[0]
+passwd=(((msg.split(':'))[2]).split('\n'))[0]
+print "hello,%s,%s"%(name,passwd)
