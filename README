@@ -1,0 +1,8 @@
+it tends to make a communication tools by socket.
+the server side
+
+server.py   
+passwd.db   the password databse
+
+the client side
+the client.py
