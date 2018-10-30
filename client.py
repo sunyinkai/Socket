@@ -10,22 +10,25 @@ def client(id):
     msg=b"userName:YinkaiSun\nPasswd:123456\n"
     s.send(msg)
     buffer=[]
-    # while True:
-    #     d=s.recv(1024)
-    #     if d:
-    #         print(d)
-    #     else:
-    #         break
-    d=s.recv(1024)
-    if d:
-        print(d)
-    #s.send(b"exit")
+    while True:
+        d = s.recv(1024)
+        if str(d).find("exit"):
+            break
+        if d:
+            print(d)
+        if d==b'exit':
+            break
     s.close()
+
+
 if __name__ == "__main__":
     threadingList=[]
-    for i in range(10000):
+    for i in range(10):
         threadingList.append(threading.Thread(client(i)))
     for i in threadingList:
-        i.start()
+        try:
+            i.start()
+        except  ConnectionResetError:
+            pass
     for i in threadingList:
         i.join()
