@@ -1,8 +1,7 @@
-data=b'userName:YinkaiSun\nPasswd:123456\n'
-print(str(((str(data).split(':'))[1])))
-print(((str(data).split(':'))[1]).split('\\n'))
+# data=b"58\n1\nsunyinkai\n123456"
+# lenth, command, username, passwd = str(data).split('\\n')
+# print(lenth, command, username, passwd)
+data="你好"
 
-name= (str(((str(data).split(':'))[1])).split('\\n'))[0]
-passwd = (str(((str(data).split(':'))[2])).split('\\n'))[0]
-print(type(name),type(passwd))
-print(name, passwd)
+print(data.encode())
+print(data.encode().decode())
