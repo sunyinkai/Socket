@@ -1,4 +1,4 @@
-it tends to make a communication tools by socket.
+it tends to make a simple communication tools by socket.
 the server side
 
 server.py   

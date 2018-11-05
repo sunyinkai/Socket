@@ -12,7 +12,7 @@ def client(id):
     print(d)
     d=s.recv(1024)
     d=d.decode()
-    length,command,status,description=d.split('\n')
+    # length,command,status,description=d.split('\n')
     print(d)
     s.close()
 

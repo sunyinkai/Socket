@@ -8,7 +8,7 @@ async def tcplink(sock, addr):
     await loop.sock_sendall(sock, b'welcome')
     t = sqlite3.connect('passwd.db')
     db = t.cursor()  # open the database
-    data = await loop.sock_recv(sock, 1024).decode()
+    data = await loop.sock_recv(sock, 1024)
     data = data.decode()
     # print(data)
     lenth, command, username, passwd = data.split("\n")
