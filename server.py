@@ -3,45 +3,79 @@ import asyncio
 import sqlite3
 
 
+class Msg:
+    @staticmethod
+    def encode_message(lenth, command, status, description):
+        msg = ''
+        msg += chr(0) + chr(0) + chr(0) + chr(lenth)
+        msg += chr(0) + chr(0) + chr(0) + chr(command)
+        msg += chr(status)
+        msg += description
+        for i in range(64 - len(description)):
+            msg += chr(0)
+        return msg
+
+    @staticmethod
+    def decode_message(data):
+        information = []
+        information.append(ord(data[3]))
+        information.append(ord(data[7]))
+        s = ''
+        for i in range(8, 28):
+            if ord(data[i]) == 0:
+                break
+            else:
+                s += data[i]
+        information.append(s)
+        s = ''
+        for i in range(28, 58):
+            if ord(data[i]) == 0:
+                break
+            else:
+                s += data[i]
+        information.append(s)
+        return information
+
+
 async def tcplink(sock, addr):
     print('Accept new connection from %s:%s...' % addr)
     await loop.sock_sendall(sock, b'welcome')
     t = sqlite3.connect('passwd.db')
     db = t.cursor()  # open the database
+
     data = await loop.sock_recv(sock, 1024)
     data = data.decode()
-    # print(data)
-    lenth, command, username, passwd = data.split("\n")
-    # print("--------------------->")
-    # print(lenth, command, username, passwd)
-    if command == '1':
+    lenth, command, username, passwd = Msg.decode_message(data)
+    print(lenth, command, username, passwd)
+    if command == 1:
         tmp = []
-        msg=''
+        msg = ''
         for row in db.execute("SELECT * FROM INFO WHERE user='%s' " % username):
             tmp.append(row)
         if tmp:
-            msg+='len\n'+'2\n'+'0\n'+'no! the username has exist!'
-        else:   #ok
+            msg = Msg.encode_message(73, 2, 0, 'no!the username has exist!')
+        else:  # ok
             db.execute("INSERT INTO INFO(user,passwd) VALUES('%s','%s')" % (username, passwd))
             t.commit()
-            msg+= 'len\n'+'2\n' + '1\n' + 'ok! username=%s,the password =%s' % (username, passwd)
+            msg = Msg.encode_message(73, 2, 1, 'ok! username=%s,the password =%s' % (username, passwd))
         await loop.sock_sendall(sock, msg.encode())
-    elif command == '3':
+    elif command == 3:
         cursor = db.execute("SELECT * FROM INFO WHERE user='%s' " % username)
         tmp = []
-        msg=''
+        msg = ''
         for row in cursor:
             tmp.append(row[1])
         if tmp:
-            if(passwd==tmp[0]):
-                msg+='len\n'+'4\n'+'1\n'+'ok!login sucessful!'
+            if (passwd == tmp[0]):
+                msg = Msg.encode_message(73, 4, 1, 'ok!login sucessful!')
             else:
-                msg+='len\n'+'4\n'+'0\n'+'no!passwd is wrong!'
+                msg = Msg.encode_message(73, 4, 0, 'no!passwd is wrong!')
         else:
-            msg+='len\n'+'4\n'+'0\n'+'no!have no such a username!'
+            msg += Msg.encode_message(73, 4, 0, 'no!have no such a username!')
         await loop.sock_sendall(sock, msg.encode())
     else:
         pass
+    # await asyncio.sleep(10)
     sock.close()
     print('Connection from %s:%s closed.' % addr)
 
@@ -49,7 +83,6 @@ async def tcplink(sock, addr):
 async def main():
     addr = ('127.0.0.1', 12345)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # new a socket
-
     s.bind(addr)
     s.listen(5)
     s.setblocking(False)
