@@ -1,6 +1,8 @@
 import socket
 import asyncio
 import sqlite3
+import hashlib
+import environ
 
 
 class Msg:
@@ -39,7 +41,7 @@ class Msg:
 
 async def tcplink(sock, addr):
     print('Accept new connection from %s:%s...' % addr)
-    await loop.sock_sendall(sock, b'welcome')
+    # await loop.sock_sendall(sock, b'welcome')
     t = sqlite3.connect('passwd.db')
     db = t.cursor()  # open the database
 
@@ -47,6 +49,10 @@ async def tcplink(sock, addr):
     data = data.decode()
     lenth, command, username, passwd = Msg.decode_message(data)
     print(lenth, command, username, passwd)
+    m = hashlib.md5()
+    m.update(passwd.encode())
+    m.update(environ.SECRETKEY.encode())
+    passwd = m.hexdigest()
     if command == 1:
         tmp = []
         msg = ''
@@ -81,7 +87,7 @@ async def tcplink(sock, addr):
 
 
 async def main():
-    addr = ('127.0.0.1', 12345)
+    addr = ('0.0.0.0', 12345)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # new a socket
     s.bind(addr)
     s.listen(5)

@@ -35,31 +35,29 @@ class Msg:
         return information
 
 
+mutex = threading.Lock()
+
+
 def client(id):
     print('Start %d! (%s)' % (id, threading.currentThread()))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(addr)
-    msg = Msg.encode_message(58, 1, 'tom', '123')
-    # msg=b"58\n3\nsunyinkai33\n123456"
+    msg = Msg.encode_message(58, 3, 'tddfom', '123')
+
     s.send(msg.encode())
     d = s.recv(1024)
-    print(d)
-    d = s.recv(1024)
     d = d.decode()
-    length, command, status, description = Msg.decode_message(d)
+    if mutex.acquire(1):
+        length, command, status, description = Msg.decode_message(d)
+        mutex.release()
     print(description)
     s.close()
 
 
 if __name__ == "__main__":
     threadingList = []
-    for i in range(10):
-        threadingList.append(threading.Thread(client(i)))
-    for i in threadingList:
-        try:
-            i.start()
-
-        except  ConnectionResetError:
-            pass
+    for i in range(1):
+        i = threading.Thread(client(i))
+        i.start()
     for i in threadingList:
         i.join()

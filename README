@@ -1,8 +1,1 @@
-it tends to make a simple communication tools by socket.
-the server side
-
-server.py   
-passwd.db   the password databse
-
-the client side
-the client.py
+A simple protocol which is intended for registering and verifyinig user information based on socket.
