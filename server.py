@@ -9,12 +9,10 @@ class Msg:
     @staticmethod
     def encode_message(lenth, command, status, description):
         msg = ''
-        msg += chr(0) + chr(0) + chr(0) + chr(lenth)
-        msg += chr(0) + chr(0) + chr(0) + chr(command)
+        msg += chr(0)*3  + chr(lenth)
+        msg += chr(0)*3 + chr(command)
         msg += chr(status)
-        msg += description
-        for i in range(64 - len(description)):
-            msg += chr(0)
+        msg += description+chr(0)*(64-len(description))
         return msg
 
     @staticmethod
@@ -51,7 +49,7 @@ async def tcplink(sock, addr):
     print(lenth, command, username, passwd)
     m = hashlib.md5()
     m.update(passwd.encode())
-    m.update(environ.SECRETKEY.encode())
+    m.update(environ.SECRETKEY.encode())  # add salt
     passwd = m.hexdigest()
     if command == 1:
         tmp = []
@@ -102,3 +100,4 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()  # get a event loop
     loop.create_task(main())
     loop.run_forever()
+

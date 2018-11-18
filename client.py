@@ -9,14 +9,10 @@ addr = ('127.0.0.1', 12345)
 class Msg:
     @staticmethod
     def encode_message(lenth, command, username, password):
-        msg = chr(0) + chr(0) + chr(0) + chr(lenth)
-        msg += chr(0) + chr(0) + chr(0) + chr(command)
-        msg += username
-        for i in range(0, 20 - len(username)):
-            msg += chr(0)
-        msg += password
-        for i in range(0, 30 - len(password)):
-            msg += chr(0)
+        msg = chr(0)*3  + chr(lenth)
+        msg += chr(0)*3 + chr(command)
+        msg += username+chr(0)*(20-len(username))
+        msg += password+chr(0)*(30-len(password))
         return msg
 
     @staticmethod
