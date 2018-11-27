@@ -38,7 +38,7 @@ def client(id):
     print('Start %d! (%s)' % (id, threading.currentThread()))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(addr)
-    msg = Msg.encode_message(58, 3, 'tddfom', '123')
+    msg = Msg.encode_message(58, 3, 'yinkaisu', '124')
 
     s.send(msg.encode())
     d = s.recv(1024)

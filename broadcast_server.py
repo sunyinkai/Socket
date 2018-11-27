@@ -3,21 +3,32 @@ import socket
 import time
 from random import randint
 
-f=''
-async def generate_num(time=0.25):
-    f=open('in.txt','a')
+all_cnt=0 # 目前服务器已经生产了多少个字节
+
+
+async def generate_num(timer=0.25):
+    global all_cnt
     while True:
-        val=randint(0,100)
-        f.write(str(val)+'\n')
-        await asyncio.sleep(time)
+        with open('in.txt','a') as f:
+            val=randint(0,100)
+            string=str(val)+'\n'
+            f.write(string)
+            all_cnt=all_cnt+len(string)
+        await asyncio.sleep(timer)  # 挂起当前协程
 
 
 async def send_num(sock,address):
     print('accept a connection from %s:%s'%(address))
-    print(type(f))
-    for line in f:
-        print('tag')
-        await loop.sock_sendall(sock,line.encode())
+    now_cnt=0  # 当前sock已经接收到了什么位置
+    while True:
+        with open('in.txt','r') as f:
+            if now_cnt < all_cnt:
+                f.seek(now_cnt)
+                num=f.readline()
+                await loop.sock_sendall(sock,num.encode())
+                now_cnt=now_cnt+len(num)
+            else:
+                await asyncio.sleep(0.001)
 
 
 async def main():
