@@ -1,1 +1,5 @@
+client.py and server.py
 A simple protocol which is intended for registering and verifyinig user information based on socket.
+------------------------
+broadcast_client.py and broadcast_server.py
+A simple script to implement the server broadcast the data to all client.

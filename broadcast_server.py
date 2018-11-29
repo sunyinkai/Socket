@@ -25,6 +25,7 @@ async def send_num(sock, address):
             if now_cnt < all_cnt:
                 f.seek(now_cnt)
                 num = f.readline()
+
         if len(num):
             await loop.sock_sendall(sock, num.encode())
             now_cnt = now_cnt + len(num)
